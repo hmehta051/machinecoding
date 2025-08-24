@@ -10,6 +10,7 @@ import Toast from '../components/Toast'
 import AutoComplete from '../components/AutoComplete'
 import NestedCheckbox from '../components/NestedCheckbox'
 import NestedComments from '../components/NestedComments'
+import InfiniteScroll from '../components/InfiniteScroll'
 
 function ReactMachineCoding() {
   const location = useLocation()
@@ -152,6 +153,16 @@ function ReactMachineCoding() {
             >
               NestedComments
             </Link>
+            <Link
+              to="/reactMachineCoding/infinite-scroll"
+              className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                location.pathname === '/reactMachineCoding/infinite-scroll'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              } transition-colors duration-200`}
+            >
+              Infinite Scroll
+            </Link>
           </div>
         </nav>
 
@@ -169,6 +180,7 @@ function ReactMachineCoding() {
           <Route path="autocomplete" element={<AutoComplete />} />
           <Route path="nestedCheckbox" element={<NestedCheckbox />} />
           <Route path="nestedcomments" element={<NestedComments />} />
+          <Route path="infinite-scroll" element={<InfiniteScroll />} />
         </Routes>
       </div>
     </div>
@@ -325,6 +337,20 @@ function Overview() {
         <Link
           to="/reactMachineCoding/nestedcomments"
           className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors duration-200"
+        >
+          Start Building →
+        </Link>
+      </div>
+       <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg border border-blue-200">
+        <h3 className="text-xl font-semibold text-blue-800 mb-3">
+          Infinite Scroll W/o API
+        </h3>
+        <p className="text-blue-600 mb-4">
+          Build a Infinite Scroll Without API
+        </p>
+        <Link
+          to="/reactMachineCoding/infinite-scroll"
+          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
         >
           Start Building →
         </Link>

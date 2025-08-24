@@ -48,30 +48,68 @@ const checkboxData = [
 ]
 
 const Checkbox = ({ data, checked, setChecked }) => {
+  // const handleChange = (isChecked, node) => {
+  //   setChecked(prev => {
+  //     const newState = { ...prev, [node.id]: isChecked }
+
+  //     const updateChildren = node => {
+  //       node.children?.forEach(child => {
+  //         newState[child.id] = isChecked
+  //         child.children && updateChildren(child)
+  //       })
+  //     }
+  //     updateChildren(node)
+
+  //     const verifyChecked = node => {
+  //       if (!node.children) return newState[node.id] || false
+  //       const allChecked = node.children.every(child => verifyChecked(child))
+  //       newState[node.id] = allChecked
+  //       return allChecked
+  //     }
+
+  //     checkboxData.forEach(child => verifyChecked(child))
+  //     return newState
+  //   })
+  // }
+
   const handleChange = (isChecked, node) => {
     setChecked(prev => {
-      const newState = { ...prev, [node.id]: isChecked }
+      const newState = { ...prev }
 
-      const updateChildren = node => {
-        node.children?.forEach(child => {
-          newState[child.id] = isChecked
-          child.children && updateChildren(child)
+      // Phase 1: Downward Propagation
+      // Recursively update the clicked node and all its descendants.
+      const updateDescendants = (currentNode, checkedStatus) => {
+        newState[currentNode.id] = checkedStatus
+        if (currentNode.children) {
+          currentNode.children.forEach(child =>
+            updateDescendants(child, checkedStatus)
+          )
+        }
+      }
+      updateDescendants(node, isChecked)
+
+      // Phase 2: Upward Propagation
+      // Recursively update all parent nodes based on their children's state.
+      // This function ensures we check from the bottom of the tree upwards.
+      const updateAncestors = nodes => {
+        nodes.forEach(parentNode => {
+          if (parentNode.children) {
+            // Recurse to the deepest level first
+            updateAncestors(parentNode.children)
+
+            // After children are processed, determine the parent's state
+            const allChildrenChecked = parentNode.children.every(
+              child => newState[child.id]
+            )
+            newState[parentNode.id] = allChildrenChecked
+          }
         })
       }
-      updateChildren(node)
+      updateAncestors(checkboxData) // Start the update from the top-level nodes
 
-      const verifyChecked = node => {
-        if (!node.children) return newState[node.id] || false
-        const allChecked = node.children.every(child => verifyChecked(child))
-        newState[node.id] = allChecked
-        return allChecked
-      }
-
-      checkboxData.forEach(child => verifyChecked(child))
       return newState
     })
   }
-
   return (
     <>
       <div>
