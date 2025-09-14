@@ -40,12 +40,29 @@ const initialComments = [
   },
 ]
 
-const Comment = ({ comments, expand, setIsexpand, handleDelete, handleAddReply }) => {
+const Comment = ({
+  comments,
+  expand,
+  setIsexpand,
+  handleDelete,
+  handleAddReply,
+}) => {
   const handleChange = comment => {
     setIsexpand(prev => {
       const newState = { ...prev, [comment.id]: !prev[comment.id] }
       return newState
     })
+  }
+  const addReply = comment => {
+    const newReply = {
+      id: Date.now() * Math.random(),
+      author: prompt('Enter your name'),
+      text: prompt('Enter your reply'),
+      replies: [],
+      timestamp: new Date().toISOString(),
+    }
+    handleAddReply(comment.id, newReply)
+    setIsexpand(prev => ({ ...prev, [comment.id]: true }))
   }
   return (
     <div className="pl-4 border-l-2 border-gray-300">
@@ -74,7 +91,10 @@ const Comment = ({ comments, expand, setIsexpand, handleDelete, handleAddReply }
               </button>
             )}
             <div className="flex space-x-4 mt-2 text-sm text-blue-600">
-              <button className="hover:underline hover:text-blue-800" onClick={()=>handleAddReply(comment)}>
+              <button
+                className="hover:underline hover:text-blue-800"
+                onClick={() => addReply(comment)}
+              >
                 Reply
               </button>
               <button
@@ -109,7 +129,7 @@ const Comment = ({ comments, expand, setIsexpand, handleDelete, handleAddReply }
 const NestedComments = () => {
   const [comments, setComments] = useState(initialComments)
   const [expand, setIsexpand] = useState({})
-  const handleDelete = (idToDelete) => {
+  const handleDelete = idToDelete => {
     const deleteRecurse = (commentList, idToDelete) => {
       return commentList
         .filter(comment => comment.id !== idToDelete)
@@ -124,9 +144,21 @@ const NestedComments = () => {
     }
     setComments(prev => deleteRecurse(prev, idToDelete))
   }
-  const handleAddReply = () =>{
-    console.log("hello");
-    
+  const handleAddReply = (commentId, newReply) => {
+    const addRecurse = (commentList, commentId, reply) => {
+      return commentList.map(comment => {
+        if (comment.id === commentId) {
+          return { ...comment, replies: [...comment.replies, newReply] }
+        }
+        return {
+          ...comment,
+          replies: comment.replies
+            ? addRecurse(comment.replies, commentId, newReply)
+            : [],
+        }
+      })
+    }
+    setComments(prev => addRecurse(prev, commentId, newReply))
   }
   return (
     <div className="max-w-3xl mx-auto mt-8 p-6 bg-white shadow-md rounded-lg">
